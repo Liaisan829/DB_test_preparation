@@ -73,7 +73,8 @@ VALUES ('Titov', 'Dima', 921678, 12389),
 insert into passenger(surname, name, interPassword, ticket)
 VALUES ('Kitov', 'Bob', 921612, 12384);
 
-insert into flight (departureTime, arrivalTime, flightDuration, flightDate, departureAirport, arrivalAirport, planeID, crewID)
+insert into flight (departureTime, arrivalTime, flightDuration, flightDate, departureAirport, arrivalAirport, planeID,
+                    crewID)
 VALUES ('12:00', '13:00', 1, '12.03.2021', 'Russia, Moscow', 'Russia, Kazan', 2, 1),
        ('16:00', '21:00', 5, '12.03.2021', 'Russia, Moscow', 'UK, London', 3, 2),
        ('17:00', '23:00', 6, '15.04.2021', 'Russia, Kazan', 'Russia, Vladivostok', 1, 3),
@@ -99,7 +100,28 @@ from flight
 where flightDuration = (select MAX(flightDuration) from flight);
 
 -- 4 количество рейсов каждого аэропорта за указанный день
-select airport.name, flight.flightDate, count(distinct flight.id) as amountOfFlights from airport, flight where flight.departureAirport = airport.location
-                                                                                                            and flight.flightDate = ? group by airport.name, flight.flightDate;
+select airport.name, flight.flightDate, count(distinct flight.id) as amountOfFlights
+from airport,
+     flight
+where flight.departureAirport = airport.location
+  and flight.flightDate = ?
+group by airport.name, flight.flightDate;
 
 -- 5
+select max(Total_count.max_count)
+from (
+         select sum(flight.flightDuration) as max_count
+         from flight,
+              passenger
+         where flight.id = passenger.flightID
+         group by passenger.name
+     ) Total_count;
+
+select min(Total_count.max_count)
+from (
+         select sum(flight.flightDuration) as max_count
+         from flight,
+              passenger
+         where flight.id = passenger.flightID
+         group by passenger.name
+     ) Total_count
